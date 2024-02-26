@@ -4,7 +4,58 @@
 ;; To install a package with Doom you must declare them here and run 'doom sync'
 ;; on the command line, then restart Emacs for the changes to take effect -- or
 ;; use 'M-x doom/reload'.
+
+;; ---------------------------------------------------------------------;;
+;; GENERAL
+;; ---------------------------------------------------------------------;;
+
+;; UI
 (package! catppuccin-theme)
+(package! rainbow-mode)
+(package! olivetti)
+(package! mixed-pitch)
+
+;; Utilities
+(package! imenu-list)
+
+;; ---------------------------------------------------------------------;;
+;; LATEX
+;; ---------------------------------------------------------------------;;
+
+(package! preview-dvisvgm)
+
+;; ---------------------------------------------------------------------;;
+;; ORG-MODE
+;; ---------------------------------------------------------------------;;
+
+(package! org-ql)
+
+;; UI
+(package! org-modern)
+(package! org-modern-indent
+  :recipe (:host github :repo "jdtsmith/org-modern-indent"))
+
+;; Capture
+(package! doct
+  :recipe (:host github :repo "progfolio/doct"))
+
+;; Babel
+(package! org-auto-tangle)
+
+;; Org-agenda
+(package! org-super-agenda)
+
+;; Org-roam
+(package! websocket)
+(package! org-roam-ui)
+
+;; Document support
+(package! org-noter-pdftools)
+(package! nov)
+
+;; LaTeX
+(package! org-fragtog-mode
+  :recipe (:host github :repo "io12/org-fragtog"))
 
 ;; To install SOME-PACKAGE from MELPA, ELPA or emacsmirror:
 ;; (package! some-package)
