@@ -1,0 +1,11 @@
+#+title: Doom Emacs
+
+This repository contains my personal configuration for Doom Emacs. The configuration consists of the following files:
+
+1. [[file:./init.el][init.el]]: This file defines the list of Doom Emacs modules to activate.
+2. [[file:./config.org][config.org]]: The heart of the configuration, where virtually everything not covered by existing Doom Emacs modules are contained. This is a literate configuration, and the resulting code will be tangled to [[file:./config.el][config.el.]]
+3. [[file:./packages.el][packages.el]]: This file contains a list of packages to be installed by [[https://github.com/radian-software/straight.el][Straight]]. Note that packages do not need to be manually added in for Doom modules.
+
+* Notes
+** Adding new features
+It is advisable to first verify whether or not a Doom Emacs module already provides the sought after feature. This will reduce the overhead of having to maintain it, /i.e./ don't reinvent the wheel. If not, then proceed to hacking away at [[file:./config.org][config.org]], and keep in mind to define packages in [[file:./packages.el][packages.el]].
