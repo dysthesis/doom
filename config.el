@@ -18,6 +18,9 @@
               '(org-block-begin-line :background "#000000" :foregorund "#eeeeee")
               '(org-block-end-line :background "#000000" :foregorund "#eeeeee")))
 
+(set-frame-parameter nil 'alpha-background 75)
+(add-to-list 'default-frame-alist '(alpha-background . 75))
+
 (setq doom-theme 'catppuccin)
 (load-theme 'catppuccin t t)
 (catppuccin-set-color 'base "#000000")
@@ -92,6 +95,8 @@
   (setq org-ellipsis " ↪"))
 
 (setq org-pretty-entities t)
+
+(setq org-startup-folded t)
 
 (setq org-archive-location "~/Org/archive.org::* From =%s=")
 
@@ -312,10 +317,12 @@
                           :scheduled past
                           :order 2)
                          (:name "Upcoming"
-                          :time-grid t
-                          :scheduled future
-                          :deadline future
-                          :order 3)))))
+                          :and (:deadline future
+                                :priority>= "B")
+                          :and (:scheduled future
+                                :priority>= "B")
+                          :order 3)
+                         (:discard (:anything t))))))
           (alltodo "" ((org-agenda-overriding-header "")
                        (org-super-agenda-groups
                         '((:name "Ongoing"
@@ -522,7 +529,7 @@
   `((,(regexp-quote org-roam-buffer) ; persistent org-roam buffer
      :side right :width .33 :height .5 :ttl nil :modeline nil :quit nil :slot 1)
     ("^\\*org-roam: " ; node dedicated org-roam buffer
-     :side right :width .33 :height .5 :ttl nil :modeline nil :quit nil :slot 2))))
+     :side right :width .33 :height .5 :ttl nil :modeline nil :quit nil :slot 2)))
   (setq org-roam-capture-templates
         '(("d" " Default" plain
            "%?"
@@ -563,15 +570,6 @@
                                                   '(:immediate-finish t)))))
     (apply #'org-roam-node-insert args)))
 
-(defadvice! doom-modeline--buffer-file-name-roam-aware-a (orig-fun)
-  :around #'doom-modeline-buffer-file-name ; takes no args
-  (if (s-contains-p org-roam-directory (or buffer-file-name ""))
-      (replace-regexp-in-string
-       "\\(?:^\\|.*/\\)\\([0-9]\\{4\\}\\)\\([0-9]\\{2\\}\\)\\([0-9]\\{2\\}\\)[0-9]*-"
-       "🢔(\\1-\\2-\\3) "
-       (subst-char-in-string ?_ ?  buffer-file-name))
-    (funcall orig-fun)))
-
 (use-package! websocket
     :after org-roam)
 
@@ -599,3 +597,215 @@
           (blue . "#89b4fa")
           (violet . "#8be9fd")
           (magenta . "#f5c2e7"))))
+
+(use-package org-noter
+  :after (:any org pdf-view)
+  :config
+  (setq
+   ;; Please stop opening frames
+   org-noter-always-create-frame nil
+   ;; I want to see the whole file
+   org-noter-hide-other nil
+   ;; Everything is relative to the main notes file
+   org-noter-notes-search-path (list org-directory)
+   ))
+
+(add-hook 'org-mode-hook 'org-fragtog-mode)
+
+(plist-put org-format-latex-options :foreground "White")
+(plist-put org-format-latex-options :background nil)
+
+(setq org-highlight-latex-and-related '(latex script entities))
+
+(add-to-list 'org-latex-packages-alist
+             '("" "tikz" t))
+
+(eval-after-load "preview"
+  '(add-to-list 'preview-default-preamble "\\PreviewEnvironment{tikzpicture}" t))
+
+(after! org
+  (setq org-latex-create-formula-image-program 'dvisvgm))
+
+(use-package org-auto-tangle
+  :defer t
+  :hook (org-mode . org-auto-tangle-mode))
+
+(use-package citar-org-roam
+  :after (citar org-roam)
+  :config (citar-org-roam-mode))
+(setq citar-org-roam-capture-template-key "l")
+(setq citar-org-roam-note-title-template "${author} - ${title}")
+
+(setq citar-org-roam-template-fields
+  '((:citar-title . ("title"))
+    (:citar-author . ("author" "editor"))
+    (:citar-date . ("date" "year" "issued"))
+    (:citar-pages . ("pages"))
+    (:citar-type . ("=type="))
+    (:citar-file . ("file"))))
+
+(use-package! org-ref
+    ;:after org-roam
+    :config
+    (setq
+     org-ref-get-pdf-filename-function
+      (lambda (key) (car (bibtex-completion-find-pdf key)))
+     org-ref-default-bibliography (list "~/Org/Library.bib")
+     ;;org-ref-bibliography-notes "~/Org/Roam/Literature/bibnotes.org"
+     org-ref-pdf-directory "~/Documents/Library/files"
+     org-ref-note-title-format "* %y - %t\n :PROPERTIES:\n  :Custom_ID: %k\n  :NOTER_DOCUMENT: %F\n :ROAM_KEY: cite:%k\n  :AUTHOR: %9a\n  :JOURNAL: %j\n  :YEAR: %y\n  :VOLUME: %v\n  :PAGES: %p\n  :DOI: %D\n  :URL: %U\n :END:\n\n"
+     org-ref-notes-directory "~/Org/Roam/Literature"
+     org-ref-notes-function 'orb-edit-notes))
+
+(after! org-ref
+(setq
+ bibtex-completion-notes-path "~/Org/Roam/Literature/"
+ bibtex-completion-bibliography "~/Org/Library.bib"
+ bibtex-completion-library-path "~/Documents/Library/files/"
+ bibtex-completion-pdf-field "file"
+ bibtex-completion-notes-template-multiple-files
+ (concat
+  "#+TITLE: ${title}\n"
+  "#+ROAM_KEY: cite:${=key=}\n"
+  "* TODO Notes\n"
+  ":PROPERTIES:\n"
+  ":CUSTOM_ID: ${=key=}\n"
+  ":NOTER_DOCUMENT: %(orb-process-file-field \"${=key=}\")\n"
+  ":AUTHOR: ${author-abbrev}\n"
+  ":JOURNAL: ${journaltitle}\n"
+  ":DATE: ${date}\n"
+  ":YEAR: ${year}\n"
+  ":DOI: ${doi}\n"
+  ":URL: ${url}\n"
+  ":END:\n\n"
+  )
+ )
+)
+
+(use-package! nov
+  :mode ("\\.epub\\'" . nov-mode)
+  :config
+  (map! :map nov-mode-map
+          :n "RET" #'nov-scroll-up)
+  (defun doom-modeline-segment--nov-info ()
+      (concat
+       " "
+       (propertize
+        (cdr (assoc 'creator nov-metadata))
+        'face 'doom-modeline-project-parent-dir)
+       " "
+       (cdr (assoc 'title nov-metadata))
+       " "
+       (propertize
+        (format "%d/%d"
+                (1+ nov-documents-index)
+                (length nov-documents))
+        'face 'doom-modeline-info)))
+  (advice-add 'nov-render :override #'ignore)
+  (defun +nov-mode-setup ()
+      "Tweak nov-mode to our liking."
+      (face-remap-add-relative 'variable-pitch
+                               :family "Georgia Pro"
+                               :height 1.4)
+      (face-remap-add-relative 'default :height 1.3)
+      (setq-local line-spacing 0.2
+                  next-screen-context-lines 4
+                  shr-use-colors nil)
+      (require 'visual-fill-column nil t)
+      (setq-local visual-fill-column-center-text t
+                  visual-fill-column-width 81
+                  nov-text-width 80)
+      (visual-fill-column-mode 1)
+      (hl-line-mode -1)
+      ;; Re-render with new display settings
+      (nov-render-document)
+      ;; Look up words with the dictionary.
+      (add-to-list '+lookup-definition-functions #'+lookup/dictionary-definition)
+      ;; Customise the mode-line to make it more minimal and relevant.
+      (setq-local
+       mode-line-format
+       `((:eval
+          (doom-modeline-segment--workspace-name))
+         (:eval
+          (doom-modeline-segment--window-number))
+         (:eval
+          (doom-modeline-segment--nov-info))
+         ,(propertize
+           " %P "
+           'face 'doom-modeline-buffer-minor-mode)
+         ,(propertize
+           " "
+           'face (if (doom-modeline--active) 'mode-line 'mode-line-inactive)
+           'display `((space
+                       :align-to
+                       (- (+ right right-fringe right-margin)
+                          ,(* (let ((width (doom-modeline--font-width)))
+                                (or (and (= width 1) 1)
+                                    (/ width (frame-char-width) 1.0)))
+                              (string-width
+                               (format-mode-line (cons "" '(:eval (doom-modeline-segment--major-mode))))))))))
+         (:eval (doom-modeline-segment--major-mode)))))
+  (add-hook 'nov-mode-hook #'+nov-mode-setup))
+
+(use-package citar
+  :custom
+  (citar-bibliography '("~/Org/Library.bib"))
+  :hook
+  (LaTeX-mode . citar-capf-setup)
+  (org-mode . citar-capf-setup))
+
+(defun my-citar-org-open-notes (key entry)
+  (let* ((bib (string-join (list my/bibtex-directory key ".bib")))
+         (org (string-join (list my/bibtex-directory key ".org")))
+         (new (not (file-exists-p org))))
+    (funcall citar-file-open-function org)
+    (when (and new (eq (buffer-size) 0))
+      (insert (format template
+                      (assoc-default "title" entry)
+                      user-full-name
+                      user-mail-address
+                      bib
+                      (with-temp-buffer
+                        (insert-file-contents bib)
+                        (buffer-string))))
+      (search-backward "|")
+      (delete-char 1))))
+
+(setq-default citar-open-note-function 'my-citar-org-open-notes)
+
+(bind-key "C-c o" #'citar-open)
+
+(use-package! oc-csl-activate
+  :after oc
+  :config
+  (setq org-cite-csl-activate-use-document-style t)
+  (defun +org-cite-csl-activate/enable ()
+    (interactive)
+    (setq org-cite-activate-processor 'csl-activate)
+    (add-hook! 'org-mode-hook '((lambda () (cursor-sensor-mode 1)) org-cite-csl-activate-render-all))
+    (defadvice! +org-cite-csl-activate-render-all-silent (orig-fn)
+      :around #'org-cite-csl-activate-render-all
+      (with-silent-modifications (funcall orig-fn)))
+    (when (eq major-mode 'org-mode)
+      (with-silent-modifications
+        (save-excursion
+          (goto-char (point-min))
+          (org-cite-activate (point-max)))
+        (org-cite-csl-activate-render-all)))
+    (fmakunbound #'+org-cite-csl-activate/enable)))
+
+(set-formatter! 'alejandra "alejandra --quiet" :modes '(nix-mode))
+(after! apheleia
+  (push '(alejandra . ("alejandra" "-")) apheleia-formatters)
+  (setf (alist-get 'nix apheleia-mode-alist) 'alejandra))
+
+;; OPTIONAL configuration
+(setq-default gptel-model "deepseek-coder:6.7b" ;Pick your default model
+              gptel-backend (gptel-make-ollama "Ollama"             ;Any name of your choosing
+                              :host "localhost:11434"               ;Where it's running
+                              :stream t                             ;Stream responses
+                              :models '("deepseek-coder:6.7b"
+                                        "deepseek-coder:33b"
+                                        "dolphin-mixtral:latest")))         ;List of models
+
+(setq-default shell-file-name (executable-find "dash"))

@@ -33,11 +33,13 @@
 ;; UI
 (package! org-modern)
 (package! org-modern-indent
-  :recipe (:host github :repo "jdtsmith/org-modern-indent"))
+  :recipe (:host github
+           :repo "jdtsmith/org-modern-indent"))
 
 ;; Capture
 (package! doct
-  :recipe (:host github :repo "progfolio/doct"))
+  :recipe (:host github
+           :repo "progfolio/doct"))
 
 ;; Babel
 (package! org-auto-tangle)
@@ -55,7 +57,22 @@
 
 ;; LaTeX
 (package! org-fragtog-mode
-  :recipe (:host github :repo "io12/org-fragtog"))
+  :recipe (:host github
+           :repo "io12/org-fragtog"))
+
+;; Citations
+(package! org-ref)
+(package! citar-org-roam)
+;; ---------------------------------------------------------------------;;
+;; BIBLIO
+;; ---------------------------------------------------------------------;;
+
+(package! org-cite-csl-activate
+  :recipe (:host github
+           :repo "andras-simonyi/org-cite-csl-activate")
+  :pin "26c380f1ab192c98942a21e6623f2ab43c555dde")
+
+(package! gptel)
 
 ;; To install SOME-PACKAGE from MELPA, ELPA or emacsmirror:
 ;; (package! some-package)
