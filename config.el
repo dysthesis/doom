@@ -794,6 +794,12 @@
         (org-cite-csl-activate-render-all)))
     (fmakunbound #'+org-cite-csl-activate/enable)))
 
+(after! lsp-ui
+  (setq lsp-ui-doc-enable t
+        lsp-ui-sideline-show-diagnostics t
+        lsp-ui-sideline-show-hover t
+        lsp-ui-sideline-show-code-actions t))
+
 (set-formatter! 'alejandra "alejandra --quiet" :modes '(nix-mode))
 (after! apheleia
   (push '(alejandra . ("alejandra" "-")) apheleia-formatters)

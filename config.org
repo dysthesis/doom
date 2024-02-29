@@ -1234,6 +1234,15 @@ Define the modes for which Citar should be initialised, namely Org-mode and LaTe
 
 * LaTeX
 * Development
+** LSP
+*** LSP-UI
+#+begin_src emacs-lisp
+(after! lsp-ui
+  (setq lsp-ui-doc-enable t
+        lsp-ui-sideline-show-diagnostics t
+        lsp-ui-sideline-show-hover t
+        lsp-ui-sideline-show-code-actions t))
+#+end_src
 ** Nix
 This is of critical importance, as NixOS is my primary operating system.
 
