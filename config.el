@@ -18,6 +18,10 @@
               '(org-block-begin-line :background "#000000" :foregorund "#eeeeee")
               '(org-block-end-line :background "#000000" :foregorund "#eeeeee")))
 
+(setq doom-modeline-height 40)
+
+(setq doom-modeline-bar-width 4)
+
 (set-frame-parameter nil 'alpha-background 75)
 (add-to-list 'default-frame-alist '(alpha-background . 75))
 
@@ -746,6 +750,167 @@
                                (format-mode-line (cons "" '(:eval (doom-modeline-segment--major-mode))))))))))
          (:eval (doom-modeline-segment--major-mode)))))
   (add-hook 'nov-mode-hook #'+nov-mode-setup))
+
+(require 'elfeed-org)
+
+(setq rmh-elfeed-org-files (list "~/.config/doom/elfeed.org"))
+
+(after! elfeed
+  (elfeed-org)
+  (use-package! elfeed-link)
+  (setq elfeed-search-filter "@2-week-ago +unread")
+  (setq elfeed-search-print-entry-function '+rss/elfeed-search-print-entry)
+  (setq elfeed-search-title-min-width 80)
+  (setq elfeed-show-entry-switch #'pop-to-buffer)
+  (setq elfeed-show-entry-delete #'+rss/delete-pane)
+  (setq elfeed-show-refresh-function #'+rss/elfeed-show-refresh--better-style)
+  (setq shr-max-image-proportion 0.7)
+  (defadvice! +rss-elfeed-wrap-h-nicer ()
+    "Enhances an elfeed entry's readability by wrapping it to a width of
+  `fill-column' and centering it with `visual-fill-column-mode'."
+    :override #'+rss-elfeed-wrap-h
+    (setq-local truncate-lines nil
+                shr-width 120
+                next-screen-context-lines 4
+                visual-fill-column-width 81
+                visual-fill-column-center-text t
+                default-text-properties '(line-height 1.5))
+    (let ((inhibit-read-only t)
+          (inhibit-modification-hooks t))
+      (visual-fill-column-mode)
+      (setq-local shr-current-font '(:family "Lato" :weight 'medium :height 1.5))
+      (set-buffer-modified-p nil)))
+  (defun +rss/elfeed-show-refresh--better-style ()
+      "Update the buffer to match the selected entry, using a mail-style."
+      (interactive)
+      (let* ((inhibit-read-only t)
+             (title (elfeed-entry-title elfeed-show-entry))
+             (date (seconds-to-time (elfeed-entry-date elfeed-show-entry)))
+             (author (elfeed-meta elfeed-show-entry :author))
+             (link (elfeed-entry-link elfeed-show-entry))
+             (tags (elfeed-entry-tags elfeed-show-entry))
+             (tagsstr (mapconcat #'symbol-name tags ", "))
+             (nicedate (format-time-string "%a, %e %b %Y %T %Z" date))
+             (content (elfeed-deref (elfeed-entry-content elfeed-show-entry)))
+             (type (elfeed-entry-content-type elfeed-show-entry))
+             (feed (elfeed-entry-feed elfeed-show-entry))
+             (feed-title (elfeed-feed-title feed))
+             (base (and feed (elfeed-compute-base (elfeed-feed-url feed)))))
+        (erase-buffer)
+        (insert "\n")
+        (insert (format "%s\n\n" (propertize title 'face 'elfeed-show-title-face)))
+        (insert (format "%s\t" (propertize feed-title 'face 'elfeed-search-feed-face)))
+        (when (and author elfeed-show-entry-author)
+          (insert (format "%s\n" (propertize author 'face 'elfeed-show-author-face))))
+        (insert (format "%s\n\n" (propertize nicedate 'face 'elfeed-log-date-face)))
+        (when tags
+          (insert (format "%s\n"
+                          (propertize tagsstr 'face 'elfeed-search-tag-face))))
+        ;; (insert (propertize "Link: " 'face 'message-header-name))
+        ;; (elfeed-insert-link link link)
+        ;; (insert "\n")
+        (cl-loop for enclosure in (elfeed-entry-enclosures elfeed-show-entry)
+                 do (insert (propertize "Enclosure: " 'face 'message-header-name))
+                 do (elfeed-insert-link (car enclosure))
+                 do (insert "\n"))
+        (insert "\n")
+        (if content
+            (if (eq type 'html)
+                (elfeed-insert-html content base)
+              (insert content))
+          (insert (propertize "(empty)\n" 'face 'italic)))
+        (goto-char (point-min))))
+  (defun +rss/elfeed-search-print-entry (entry)
+      "Print ENTRY to the buffer."
+      (let* ((elfeed-goodies/tag-column-width 30)
+             (elfeed-goodies/feed-source-column-width 30)
+             (elfeed-goodies/title-column-width 80) ;; Adjust this width as needed
+             (title (or (elfeed-meta entry :title) (elfeed-entry-title entry) ""))
+             (title-faces (elfeed-search--faces (elfeed-entry-tags entry)))
+             (feed (elfeed-entry-feed entry))
+             (feed-title
+              (when feed
+                (or (elfeed-meta feed :title) (elfeed-feed-title feed))))
+             (tags (mapcar #'symbol-name (elfeed-entry-tags entry)))
+             (tags-str (concat (mapconcat 'identity tags ",")))
+             (title-column (elfeed-format-column
+                            title (elfeed-clamp elfeed-goodies/title-column-width
+                                                elfeed-goodies/title-column-width
+                                                elfeed-goodies/title-column-width)
+                            :left))
+             (tag-column (elfeed-format-column
+                          tags-str (elfeed-clamp (length tags-str)
+                                                 elfeed-goodies/tag-column-width
+                                                 elfeed-goodies/tag-column-width)
+                          :left))
+             (feed-column (elfeed-format-column
+                           feed-title (elfeed-clamp elfeed-goodies/feed-source-column-width
+                                                    elfeed-goodies/feed-source-column-width
+                                                    elfeed-goodies/feed-source-column-width)
+                           :left)))
+  
+        (insert (propertize feed-column 'face 'elfeed-search-feed-face) " ")
+        (insert (propertize title-column 'face title-faces 'kbd-help title) " ")
+        (insert (propertize tag-column 'face 'elfeed-search-tag-face))
+        (setq-local line-spacing 0.2))))
+
+(defun dysthesis/elfeed-capture-entry ()
+  (interactive)
+  ;; Check if we are in elfeed-show-mode
+  (if (eq major-mode 'elfeed-show-mode)
+      (let* ((entry elfeed-show-entry)  ; Get the current entry in elfeed-show
+             (link (elfeed-entry-link entry))
+             (title (elfeed-entry-title entry)))
+        ;; Initiate an Org-roam capture
+        (org-roam-capture- :keys "e" :node (org-roam-node-create :title title))
+        (insert link))  ; Insert only the URL
+    (message "Not in elfeed-show mode!")))
+
+(after! elfeed-search
+  (set-evil-initial-state! 'elfeed-search-mode 'normal))
+(after! elfeed-show-mode
+  (set-evil-initial-state! 'elfeed-show-mode   'normal))
+
+(after! evil-snipe
+  (push 'elfeed-show-mode   evil-snipe-disabled-modes)
+  (push 'elfeed-search-mode evil-snipe-disabled-modes))
+
+(bind-key "C-c e" #'elfeed)
+
+(map! :map elfeed-search-mode-map
+      :after elfeed-search
+      [remap kill-this-buffer] "q"
+      [remap kill-buffer] "q"
+      :n doom-leader-key nil
+      :n "q" #'+rss/quit
+      :n "e" #'elfeed-update
+      :n "r" #'elfeed-search-untag-all-unread
+      :n "u" #'elfeed-search-tag-all-unread
+      :n "s" #'elfeed-search-live-filter
+      :n "RET" #'elfeed-search-show-entry
+      :n "p" #'elfeed-show-pdf
+      :n "+" #'elfeed-search-tag-all
+      :n "-" #'elfeed-search-untag-all
+      :n "S" #'elfeed-search-set-filter
+      :n "b" #'elfeed-search-browse-url
+      :n "y" #'elfeed-search-yank)
+(map! :map elfeed-show-mode-map
+      :after elfeed-show
+      [remap kill-this-buffer] "q"
+      [remap kill-buffer] "q"
+      :n doom-leader-key nil
+      :nm "q" #'+rss/delete-pane
+      :nm "o" #'ace-link-elfeed
+      :nm "RET" #'org-ref-elfeed-add
+      :nm "n" #'elfeed-show-next
+      :nm "N" #'elfeed-show-prev
+      :nm "p" #'elfeed-show-pdf
+      :nm "c" #'dysthesis/elfeed-capture-entry
+      :nm "r" #'elfeed-show-refresh
+      :nm "+" #'elfeed-show-tag
+      :nm "-" #'elfeed-show-untag
+      :nm "s" #'elfeed-show-new-live-search
+      :nm "y" #'elfeed-show-yank)
 
 (use-package citar
   :custom

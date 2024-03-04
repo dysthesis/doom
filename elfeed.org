@@ -1,0 +1,10 @@
+#+title: Elfeed
+
+* Computer science :cs:
+
+** Rust :rust:
+*** [[https://blog.rust-lang.org/feed.xml][Rust Blog]]
+*** [[https://blog.rust-lang.org/inside-rust/feed.xml][Inside Rust Blog]]
+*** [[https://without.boats/index.xml][Without Boats]]
+** [[https://fasterthanli.me/index.xml][Faster Than Lime]]
+** [[https://xeiaso.net/blog.rss][Xe Iaso's Blog]]
