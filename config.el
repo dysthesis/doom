@@ -93,6 +93,18 @@
 
 (setq +doom-dashboard-ascii-banner-fn #'dysthesis/dashboard-setup)
 
+(after! org
+  (setq org-ellipsis " ↪")
+  (setq org-startup-folded t))
+
+(defun dysthesis/org-mode-setup ()
+  (olivetti-mode)
+  (display-line-numbers-mode 0)
+  (olivetti-set-width 80)
+  (setq-local company-backends (remove 'company-dabbrev company-backends))
+  (setq-local company-backends (remove 'company-ispell company-backends)))
+(add-hook 'org-mode-hook 'dysthesis/org-mode-setup)
+
 (setq org-directory "~/Org/")
 
 (after! org
@@ -980,3 +992,12 @@
                                         "dolphin-mixtral:latest")))         ;List of models
 
 (setq-default shell-file-name (executable-find "dash"))
+
+(map! :leader
+      "h" #'evil-window-left
+      "j" #'evil-window-down
+      "k" #'evil-window-up
+      "l" #'evil-window-right)
+
+(map! :leader
+      "f b" #'+format/buffer)

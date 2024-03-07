@@ -138,6 +138,22 @@ Customise the ASCII art on the Doom dashboard. This one originates from NVChad, 
 (setq +doom-dashboard-ascii-banner-fn #'dysthesis/dashboard-setup)
 #+end_src
 
+** Olivetti mode
+Add margins and center text for Org-mode.
+#+begin_src emacs-lisp
+(after! org
+  (setq org-ellipsis " ↪")
+  (setq org-startup-folded t))
+
+(defun dysthesis/org-mode-setup ()
+  (olivetti-mode)
+  (display-line-numbers-mode 0)
+  (olivetti-set-width 80)
+  (setq-local company-backends (remove 'company-dabbrev company-backends))
+  (setq-local company-backends (remove 'company-ispell company-backends)))
+(add-hook 'org-mode-hook 'dysthesis/org-mode-setup)
+#+end_src
+
 * Org-mode
 Tell Emacs where our Org-mode documents are stored.
 #+begin_src emacs-lisp
@@ -1537,4 +1553,19 @@ Alejandra provides better formatting than nixfmt, in my opinion. Get nix-mode to
 ** Default shell
 #+begin_src emacs-lisp
 (setq-default shell-file-name (executable-find "dash"))
+#+end_src
+** Keybindings
+*** Buffer navigation
+Make it faster to navigate between open buffers in a frame.
+#+begin_src emacs-lisp
+(map! :leader
+      "h" #'evil-window-left
+      "j" #'evil-window-down
+      "k" #'evil-window-up
+      "l" #'evil-window-right)
+#+end_src
+*** Buffer formatting
+#+begin_src emacs-lisp
+(map! :leader
+      "f b" #'+format/buffer)
 #+end_src
