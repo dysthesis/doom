@@ -1,6 +1,6 @@
 (setq doom-font (font-spec :family "JetBrainsMono Nerd Font" :size 12.0 :weight 'medium)
      doom-variable-pitch-font (font-spec :family "SF Pro Display" :size 13.0 :weight 'medium)
-     line-spacing 1.11)
+     line-spacing 1.2)
 
 (after! org
   (custom-set-faces!
@@ -39,6 +39,7 @@
   :hook
   ;; You might want to enable it only in org-mode or both text-mode and org-mode
   ((org-mode) . mixed-pitch-mode)
+  ((markdown-mode) . mixed-pitch-mode)
   :config
   (setq mixed-pitch-fixed-pitch-faces
         (append mixed-pitch-fixed-pitch-faces
@@ -975,21 +976,48 @@
   (setq lsp-ui-doc-enable t
         lsp-ui-sideline-show-diagnostics t
         lsp-ui-sideline-show-hover t
+        lsp-ui-peek-always-show t
         lsp-ui-sideline-show-code-actions t))
+
+(use-package lsp-mode
+  :ensure
+  :commands lsp
+  :custom
+  (lsp-rust-analyzer-cargo-watch-command "clippy")
+  (lsp-eldoc-render-all t)
+  (lsp-idle-delay 0.6)
+  ;; enable / disable the hints as you prefer:
+  (lsp-inlay-hint-enable t)
+  ;; These are optional configurations. See https://emacs-lsp.github.io/lsp-mode/page/lsp-rust-analyzer/#lsp-rust-analyzer-display-chaining-hints for a full list
+  (lsp-rust-analyzer-display-lifetime-elision-hints-enable "skip_trivial")
+  (lsp-rust-analyzer-display-chaining-hints t)
+  (lsp-rust-analyzer-display-lifetime-elision-hints-use-parameter-names nil)
+  (lsp-rust-analyzer-display-closure-return-type-hints t)
+  (lsp-rust-analyzer-display-parameter-hints nil)
+  (lsp-rust-analyzer-display-reborrow-hints nil)
+  :config
+  (add-hook 'lsp-mode-hook 'lsp-ui-mode))
 
 (set-formatter! 'alejandra "alejandra --quiet" :modes '(nix-mode))
 (after! apheleia
   (push '(alejandra . ("alejandra" "-")) apheleia-formatters)
   (setf (alist-get 'nix apheleia-mode-alist) 'alejandra))
 
+(setq vertico-posframe-parameters
+      '((left-fringe . 8)
+        (right-fringe . 8)
+        (alpha . 100)))
+(require 'vertico-posframe)
+(vertico-posframe-mode 1)
+
 ;; OPTIONAL configuration
-(setq-default gptel-model "deepseek-coder:6.7b" ;Pick your default model
-              gptel-backend (gptel-make-ollama "Ollama"             ;Any name of your choosing
-                              :host "localhost:11434"               ;Where it's running
-                              :stream t                             ;Stream responses
+(setq-default gptel-model "deepseek-coder:6.7b"
+              gptel-backend (gptel-make-ollama "Ollama"
+                              :host "localhost:11434"
+                              :stream t
                               :models '("deepseek-coder:6.7b"
                                         "deepseek-coder:33b"
-                                        "dolphin-mixtral:latest")))         ;List of models
+                                        "dolphin-mixtral:latest")))
 
 (setq-default shell-file-name (executable-find "dash"))
 

@@ -14,6 +14,7 @@
 (package! rainbow-mode)
 (package! olivetti)
 (package! mixed-pitch)
+(package! vertico-posframe)
 
 ;; Utilities
 (package! imenu-list)
@@ -63,6 +64,7 @@
 ;; Citations
 (package! org-ref)
 (package! citar-org-roam)
+
 ;; ---------------------------------------------------------------------;;
 ;; BIBLIO
 ;; ---------------------------------------------------------------------;;
@@ -73,6 +75,7 @@
   :pin "26c380f1ab192c98942a21e6623f2ab43c555dde")
 
 (package! gptel)
+
 
 ;; To install SOME-PACKAGE from MELPA, ELPA or emacsmirror:
 ;; (package! some-package)
