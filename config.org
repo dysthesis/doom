@@ -1201,6 +1201,9 @@ Doom Emacs has its own default configurations of Elfeed. It is necessary, theref
   <<elfeed-search-filter>>
   <<elfeed-search-define-print-entry-function>>
   <<elfeed-search-title-min-width>>
+  <<elfeed-show-mode-hooks>>
+  <<elfeed-show-title-face>>
+  <<elfeed-show-author-face>>
   <<elfeed-show-entry-switch>>
   <<elfeed-show-entry-delete>>
   <<elfeed-show-define-refresh-function>>
@@ -1290,6 +1293,32 @@ Define how =elfeed= should exit the entry buffer.
 #+begin_src emacs-lisp :tangle no :noweb yes
 (setq elfeed-show-entry-delete #'+rss/delete-pane)
 #+end_src
+
+** =elfeed-show= faces
+*** Hooks
+#+name: elfeed-show-mode-hooks
+#+begin_src emacs-lisp
+(add-hook! 'elfeed-show-mode-hook (hide-mode-line-mode 1))
+(add-hook! 'elfeed-search-update-hook #'hide-mode-line-mode)
+#+end_src
+*** Title
+#+name: elfeed-show-title-face
+#+begin_src emacs-lisp
+(defface elfeed-show-title-face '((t (:weight ultrabold :slant italic :height 1.6)))
+  "title face in elfeed show buffer"
+  :group 'elfeed)
+#+end_src
+*** Author
+#+name: elfeed-show-author-face
+#+begin_src emacs-lisp
+(defface elfeed-show-author-face `((t (:weight light)))
+  "title face in elfeed show buffer"
+  :group 'elfeed)
+(set-face-attribute 'elfeed-search-title-face nil
+                    :foreground "white"
+                    :weight 'light)
+#+end_src
+
 
 ** =elfeed-show= layout
 Create a custom function to use as the =elfeed-show-refresh-function= in order to adjust how =elfeed-show= looks.
@@ -1518,10 +1547,9 @@ Define the modes for which Citar should be initialised, namely Org-mode and LaTe
 *** LSP-UI
 #+begin_src emacs-lisp
 (after! lsp-ui
-  (setq lsp-ui-doc-enable t
+  (setq lsp-ui-doc-enable nil
         lsp-ui-sideline-show-diagnostics t
-        lsp-ui-sideline-show-hover t
-        lsp-ui-peek-always-show t
+        lsp-ui-sideline-show-hover nil
         lsp-ui-sideline-show-code-actions t))
 #+end_src
 ** Rust
@@ -1545,6 +1573,20 @@ Define the modes for which Citar should be initialised, namely Org-mode and LaTe
   :config
   (add-hook 'lsp-mode-hook 'lsp-ui-mode))
 #+end_src
+*** Debugging
+#+begin_src emacs-lisp
+(after! dap-mode
+  (require 'dap-lldb)
+
+  (with-eval-after-load 'lsp-rust
+    (require 'dap-cpptools))
+    (with-eval-after-load 'dap-cpptools)
+
+  (with-eval-after-load 'dap-mode
+    (setq dap-default-terminal-kind "integrated") ;; Make sure that terminal programs open a term for I/O in an Emacs buffer
+    (dap-auto-configure-mode +1)))
+#+end_src
+
 ** Nix
 This is of critical importance, as NixOS is my primary operating system.
 
@@ -1563,12 +1605,12 @@ Alejandra provides better formatting than nixfmt, in my opinion. Get nix-mode to
 The [[https://github.com/tumashu/vertico-posframe][vertico-posframe]] package, as its name suggests, allows vertico to use posframe to show its candidate menu. This means that the candidate menu will pop up in the middle of the window instead of at the bottom of it.
 
 #+begin_src emacs-lisp
-(setq vertico-posframe-parameters
-      '((left-fringe . 8)
-        (right-fringe . 8)
-        (alpha . 100)))
-(require 'vertico-posframe)
-(vertico-posframe-mode 1)
+;; (setq vertico-posframe-parameters
+;;       '((left-fringe . 8)
+;;         (right-fringe . 8)
+;;         (alpha . 100)))
+;; (require 'vertico-posframe)
+;; (vertico-posframe-mode 1)
 #+end_src
 * LLM
 [[https://github.com/karthink/gptel][gptel]] allows for Emacs to act as a frontend for OLLaMa.

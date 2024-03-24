@@ -15,7 +15,7 @@
 (package! olivetti)
 (package! mixed-pitch)
 (package! vertico-posframe)
-
+(package! visual-fill-column)
 ;; Utilities
 (package! imenu-list)
 
@@ -76,6 +76,9 @@
 
 (package! gptel)
 
+;; ---------------------------------------------------------------------;;
+;; DEVELOPMENT
+;; ---------------------------------------------------------------------;;
 
 ;; To install SOME-PACKAGE from MELPA, ELPA or emacsmirror:
 ;; (package! some-package)

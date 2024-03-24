@@ -774,6 +774,17 @@
   (setq elfeed-search-filter "@2-week-ago +unread")
   (setq elfeed-search-print-entry-function '+rss/elfeed-search-print-entry)
   (setq elfeed-search-title-min-width 80)
+  (add-hook! 'elfeed-show-mode-hook (hide-mode-line-mode 1))
+  (add-hook! 'elfeed-search-update-hook #'hide-mode-line-mode)
+  (defface elfeed-show-title-face '((t (:weight ultrabold :slant italic :height 1.6)))
+    "title face in elfeed show buffer"
+    :group 'elfeed)
+  (defface elfeed-show-author-face `((t (:weight light)))
+    "title face in elfeed show buffer"
+    :group 'elfeed)
+  (set-face-attribute 'elfeed-search-title-face nil
+                      :foreground "white"
+                      :weight 'light)
   (setq elfeed-show-entry-switch #'pop-to-buffer)
   (setq elfeed-show-entry-delete #'+rss/delete-pane)
   (setq elfeed-show-refresh-function #'+rss/elfeed-show-refresh--better-style)
@@ -866,6 +877,20 @@
         (insert (propertize title-column 'face title-faces 'kbd-help title) " ")
         (insert (propertize tag-column 'face 'elfeed-search-tag-face))
         (setq-local line-spacing 0.2))))
+
+(add-hook! 'elfeed-show-mode-hook (hide-mode-line-mode 1))
+(add-hook! 'elfeed-search-update-hook #'hide-mode-line-mode)
+
+(defface elfeed-show-title-face '((t (:weight ultrabold :slant italic :height 1.6)))
+  "title face in elfeed show buffer"
+  :group 'elfeed)
+
+(defface elfeed-show-author-face `((t (:weight light)))
+  "title face in elfeed show buffer"
+  :group 'elfeed)
+(set-face-attribute 'elfeed-search-title-face nil
+                    :foreground "white"
+                    :weight 'light)
 
 (defun dysthesis/elfeed-capture-entry ()
   (interactive)
@@ -973,10 +998,9 @@
     (fmakunbound #'+org-cite-csl-activate/enable)))
 
 (after! lsp-ui
-  (setq lsp-ui-doc-enable t
+  (setq lsp-ui-doc-enable nil
         lsp-ui-sideline-show-diagnostics t
-        lsp-ui-sideline-show-hover t
-        lsp-ui-peek-always-show t
+        lsp-ui-sideline-show-hover nil
         lsp-ui-sideline-show-code-actions t))
 
 (use-package lsp-mode
@@ -998,17 +1022,28 @@
   :config
   (add-hook 'lsp-mode-hook 'lsp-ui-mode))
 
+(after! dap-mode
+  (require 'dap-lldb)
+
+  (with-eval-after-load 'lsp-rust
+    (require 'dap-cpptools))
+    (with-eval-after-load 'dap-cpptools)
+
+  (with-eval-after-load 'dap-mode
+    (setq dap-default-terminal-kind "integrated") ;; Make sure that terminal programs open a term for I/O in an Emacs buffer
+    (dap-auto-configure-mode +1)))
+
 (set-formatter! 'alejandra "alejandra --quiet" :modes '(nix-mode))
 (after! apheleia
   (push '(alejandra . ("alejandra" "-")) apheleia-formatters)
   (setf (alist-get 'nix apheleia-mode-alist) 'alejandra))
 
-(setq vertico-posframe-parameters
-      '((left-fringe . 8)
-        (right-fringe . 8)
-        (alpha . 100)))
-(require 'vertico-posframe)
-(vertico-posframe-mode 1)
+;; (setq vertico-posframe-parameters
+;;       '((left-fringe . 8)
+;;         (right-fringe . 8)
+;;         (alpha . 100)))
+;; (require 'vertico-posframe)
+;; (vertico-posframe-mode 1)
 
 ;; OPTIONAL configuration
 (setq-default gptel-model "deepseek-coder:6.7b"
