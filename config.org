@@ -1589,7 +1589,7 @@ Define the modes for which Citar should be initialised, namely Org-mode and LaTe
 
 ** Nix
 This is of critical importance, as NixOS is my primary operating system.
-
+end_src
 *** Alejandra
 Alejandra provides better formatting than nixfmt, in my opinion. Get nix-mode to use it as a formatter.
 #+begin_src emacs-lisp
