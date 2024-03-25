@@ -302,9 +302,9 @@ First, create a function which searches for all tasks with the category =inbox=.
 
 #+begin_src emacs-lisp
 (defun dysthesis/mark-inbox-todos ()
-  "Mark entries in the agenda whose category is 'inbox' for future bulk action."
+  "Mark entries in the agenda whose category is inbox for future bulk action."
   (let ((entries-marked 0)
-        (regexp "inbox")  ; Set the search term to 'inbox'
+        (regexp "inbox")  ; Set the search term to inbox
         category-at-point)
     (save-excursion
       (goto-char (point-min))
@@ -364,7 +364,7 @@ This function interactively sets the tags, priority, and category for a single t
       (with-current-buffer buffer
         (widen)
         (goto-char pos)
-        (org-show-context 'agenda)
+        (org-fold-show-context 'agenda)
         (funcall-interactively 'org-set-effort nil dysthesis/org-current-effort)
         (end-of-line 1)
         (setq newhead (org-get-heading)))
@@ -376,7 +376,7 @@ This function applies the =dysthesis/org-agenda-process-inbox-item= function on 
 
 #+begin_src emacs-lisp
 (defun dysthesis/bulk-process-entries ()
-  (let ())
+  ;; (let ())
   (if (not (null org-agenda-bulk-marked-entries))
       (let ((entries (reverse org-agenda-bulk-marked-entries))
             (processed 0)
@@ -404,7 +404,6 @@ This function applies the =dysthesis/org-agenda-process-inbox-item= function on 
                            skipped))
                  (if (not org-agenda-persistent-marks) "" " (kept marked)")))))
 #+end_src
-
 
 **** Process the entire inbox
 Combine the previously defined functions to process the entire inbox.
@@ -436,8 +435,8 @@ Make it easier to perform agenda-related operations.
 First, we define some functions (macros).
 #+begin_src emacs-lisp
 (defun dysthesis/org-inbox-capture ()
-  (interactive)
   "Capture a task in agenda mode."
+  (interactive)
   (org-capture nil "i"))
 (defun dysthesis/org-capture-todo ()
   (interactive)
@@ -585,7 +584,6 @@ Do not re-sort the agenda entries when grouping them. The sorting strategy was d
   :init
   (map! "C-c a" #'dysthesis/agenda))
 #+end_src
-
 
 ** Capture templates
 The DOCT (Declarative Org Capture Templates) package provides a better way to configure capture templates. In particular, it allows for the configuration of capture templates as a 'child' of another, inheriting its traits.
@@ -985,7 +983,7 @@ Allow for previewing TikZ plots.
   '(add-to-list 'preview-default-preamble "\\PreviewEnvironment{tikzpicture}" t))
 
 (after! org
-  (setq org-latex-create-formula-image-program 'dvisvgm))
+  (setq org-preview-latex-default-process 'dvisvgm))
 #+end_src
 
 *** Babel
@@ -1016,7 +1014,6 @@ Use the =citar-org-roam= package to create citation notes in Org-roam.
     (:citar-type . ("=type="))
     (:citar-file . ("file"))))
 #+end_src
-
 
 ** Org-ref
 #+begin_src emacs-lisp
@@ -1589,7 +1586,6 @@ Define the modes for which Citar should be initialised, namely Org-mode and LaTe
 
 ** Nix
 This is of critical importance, as NixOS is my primary operating system.
-end_src
 *** Alejandra
 Alejandra provides better formatting than nixfmt, in my opinion. Get nix-mode to use it as a formatter.
 #+begin_src emacs-lisp

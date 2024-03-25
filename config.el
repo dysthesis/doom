@@ -150,9 +150,9 @@
 (add-to-list 'org-modules 'org-habit t)
 
 (defun dysthesis/mark-inbox-todos ()
-  "Mark entries in the agenda whose category is 'inbox' for future bulk action."
+  "Mark entries in the agenda whose category is inbox for future bulk action."
   (let ((entries-marked 0)
-        (regexp "inbox")  ; Set the search term to 'inbox'
+        (regexp "inbox")  ; Set the search term to inbox
         category-at-point)
     (save-excursion
       (goto-char (point-min))
@@ -204,14 +204,14 @@
       (with-current-buffer buffer
         (widen)
         (goto-char pos)
-        (org-show-context 'agenda)
+        (org-fold-show-context 'agenda)
         (funcall-interactively 'org-set-effort nil dysthesis/org-current-effort)
         (end-of-line 1)
         (setq newhead (org-get-heading)))
       (org-agenda-change-all-lines newhead hdmarker))))
 
 (defun dysthesis/bulk-process-entries ()
-  (let ())
+  ;; (let ())
   (if (not (null org-agenda-bulk-marked-entries))
       (let ((entries (reverse org-agenda-bulk-marked-entries))
             (processed 0)
@@ -256,8 +256,8 @@
 (add-hook 'org-after-todo-state-change-hook #'log-todo-next-creation-date)
 
 (defun dysthesis/org-inbox-capture ()
-  (interactive)
   "Capture a task in agenda mode."
+  (interactive)
   (org-capture nil "i"))
 (defun dysthesis/org-capture-todo ()
   (interactive)
@@ -641,7 +641,7 @@
   '(add-to-list 'preview-default-preamble "\\PreviewEnvironment{tikzpicture}" t))
 
 (after! org
-  (setq org-latex-create-formula-image-program 'dvisvgm))
+  (setq org-preview-latex-default-process 'dvisvgm))
 
 (use-package org-auto-tangle
   :defer t
