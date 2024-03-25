@@ -302,9 +302,9 @@ First, create a function which searches for all tasks with the category =inbox=.
 
 #+begin_src emacs-lisp
 (defun dysthesis/mark-inbox-todos ()
-  "Mark entries in the agenda whose category is 'inbox' for future bulk action."
+  "Mark entries in the agenda whose category is inbox for future bulk action."
   (let ((entries-marked 0)
-        (regexp "inbox")  ; Set the search term to 'inbox'
+        (regexp "inbox")  ; Set the search term to inbox
         category-at-point)
     (save-excursion
       (goto-char (point-min))
@@ -364,7 +364,7 @@ This function interactively sets the tags, priority, and category for a single t
       (with-current-buffer buffer
         (widen)
         (goto-char pos)
-        (org-show-context 'agenda)
+        (org-fold-show-context 'agenda)
         (funcall-interactively 'org-set-effort nil dysthesis/org-current-effort)
         (end-of-line 1)
         (setq newhead (org-get-heading)))
@@ -376,7 +376,7 @@ This function applies the =dysthesis/org-agenda-process-inbox-item= function on 
 
 #+begin_src emacs-lisp
 (defun dysthesis/bulk-process-entries ()
-  (let ())
+  ;; (let ())
   (if (not (null org-agenda-bulk-marked-entries))
       (let ((entries (reverse org-agenda-bulk-marked-entries))
             (processed 0)
@@ -436,8 +436,8 @@ Make it easier to perform agenda-related operations.
 First, we define some functions (macros).
 #+begin_src emacs-lisp
 (defun dysthesis/org-inbox-capture ()
-  (interactive)
   "Capture a task in agenda mode."
+  (interactive)
   (org-capture nil "i"))
 (defun dysthesis/org-capture-todo ()
   (interactive)
@@ -985,7 +985,7 @@ Allow for previewing TikZ plots.
   '(add-to-list 'preview-default-preamble "\\PreviewEnvironment{tikzpicture}" t))
 
 (after! org
-  (setq org-latex-create-formula-image-program 'dvisvgm))
+  (setq org-preview-latex-default-process 'dvisvgm))
 #+end_src
 
 *** Babel
