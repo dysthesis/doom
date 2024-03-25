@@ -405,7 +405,6 @@ This function applies the =dysthesis/org-agenda-process-inbox-item= function on 
                  (if (not org-agenda-persistent-marks) "" " (kept marked)")))))
 #+end_src
 
-
 **** Process the entire inbox
 Combine the previously defined functions to process the entire inbox.
 
@@ -585,7 +584,6 @@ Do not re-sort the agenda entries when grouping them. The sorting strategy was d
   :init
   (map! "C-c a" #'dysthesis/agenda))
 #+end_src
-
 
 ** Capture templates
 The DOCT (Declarative Org Capture Templates) package provides a better way to configure capture templates. In particular, it allows for the configuration of capture templates as a 'child' of another, inheriting its traits.
@@ -1016,7 +1014,6 @@ Use the =citar-org-roam= package to create citation notes in Org-roam.
     (:citar-type . ("=type="))
     (:citar-file . ("file"))))
 #+end_src
-
 
 ** Org-ref
 #+begin_src emacs-lisp
@@ -1589,7 +1586,6 @@ Define the modes for which Citar should be initialised, namely Org-mode and LaTe
 
 ** Nix
 This is of critical importance, as NixOS is my primary operating system.
-
 *** Alejandra
 Alejandra provides better formatting than nixfmt, in my opinion. Get nix-mode to use it as a formatter.
 #+begin_src emacs-lisp
