@@ -98,6 +98,67 @@ Allow for fuzzy matching
                                orderless-flex)))
 #+end_src
 
+* Tree-sitter
+#+begin_src emacs-lisp
+(defun my/ts-node-find-child-of-type (node type)
+  (let* ((n (treesit-node-child-count node))
+         (i 0) (hit nil))
+    (while (and (< i n) (not hit))
+      (let ((c (treesit-node-child node i t)))
+        (when (and c (string= (treesit-node-type c) type))
+          (setq hit c)))
+      (setq i (1+ i)))
+    hit))
+
+(defun my/ts-node-any-descendant-p (node pred)
+  (let ((n (treesit-node-child-count node))
+        (ok (funcall pred node)))
+    (let ((i 0))
+      (while (and (not ok) (< i n))
+        (setq ok (my/ts-node-any-descendant-p (treesit-node-child node i t) pred))
+        (setq i (1+ i))))
+    ok))
+
+(defun my/ts-node-has-ancestor-type (node type)
+  (let ((p (treesit-node-parent node)) (found nil))
+    (while (and p (not found))
+      (setq found (string= (treesit-node-type p) type))
+      (setq p (treesit-node-parent p)))
+    found))
+
+(defun my/ts-trim-braces-range (block-node)
+  (let ((beg (1+ (treesit-node-start block-node)))
+        (end (1- (treesit-node-end   block-node))))
+    (when (< beg end) (cons beg end))))
+
+(defun my/ts-fold-range-rust-method-body (node _offset)
+  (let* ((body (treesit-node-child-by-field-name node "body"))
+         (params (treesit-node-child-by-field-name node "parameters"))
+         (has-self (and params
+                        (my/ts-node-any-descendant-p
+                         params (lambda (n) (string= (treesit-node-type n) "self_parameter")))))
+         (in-impl (my/ts-node-has-ancestor-type node "impl_item")))
+    (when (and body (or has-self in-impl))
+      (my/ts-trim-braces-range body))))
+
+(defun my/ts-fold-range-zig-fn-body (node _offset)
+  (let ((has-proto (my/ts-node-find-child-of-type node "FnProto"))
+        (block     (my/ts-node-find-child-of-type node "Block")))
+    (when (and has-proto block)
+      (my/ts-trim-braces-range block))))
+(with-eval-after-load 'treesit-fold
+  (setf (alist-get 'rust-ts-mode treesit-fold-range-alist)
+        '((function_item . my/ts-fold-range-rust-method-body)))
+  (setf (alist-get 'zig-ts-mode treesit-fold-range-alist)
+        '((Decl . my/ts-fold-range-zig-fn-body))))
+
+(defun my/run-treesit-fold-all-method-bodies ()
+  (interactive)
+  (unless (bound-and-true-p treesit-fold-mode)
+    (treesit-fold-mode 1))
+  (treesit-fold-close-all))
+#+end_src
+
 * Git
 ** Iconise magit
 #+begin_src emacs-lisp
