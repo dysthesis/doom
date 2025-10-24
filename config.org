@@ -199,6 +199,12 @@ Taken from [[https://www.tsdh.org/posts/2022-08-01-difftastic-diffing-with-magit
 
 #+end_src
 
+** Show =TODO= comments in Magit
+#+begin_src emacs-lisp
+(use-package! magit-todos
+  :after magit
+  :config (magit-todos-mode 1))
+#+end_src
 * Org-mode
 ** Org-directory
 #+begin_src emacs-lisp
