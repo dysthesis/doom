@@ -82,6 +82,22 @@
 (setq +doom-dashboard-ascii-banner-fn #'dysthesis/dashboard-setup)
 #+end_src
 
+* Navigation
+** Orderless
+Allow for fuzzy matching
+#+begin_src emacs-lisp
+(use-package! orderless
+  :custom
+  (completion-ignore-case t)
+  (pcomplete-ignore-case t)
+  (completion-styles '(orderless))
+  (orderless-matching-styles '(orderless-literal
+                               orderless-prefixes
+                               orderless-regexp
+                               orderless-initialism
+                               orderless-flex)))
+#+end_src
+
 * Git
 ** Iconise magit
 #+begin_src emacs-lisp
@@ -334,5 +350,38 @@ Use =olivetti-mode= to centre text in Org-mode
   (setq org-latex-preview-mode-display-live t)
 
   ;; More immediate live-previews -- the default delay is 1 second
-  (setq org-latex-preview-mode-update-delay 0.25))
+  (setq org-latex-preview-mode-update-delay 0.25)
+   ;; code for centering LaTeX previews -- a terrible idea
+  (defun my/org-latex-preview-uncenter (ov)
+    (overlay-put ov 'before-string nil))
+  (defun my/org-latex-preview-recenter (ov)
+    (overlay-put ov 'before-string (overlay-get ov 'justify)))
+  (defun my/org-latex-preview-center (ov)
+    (save-excursion
+      (goto-char (overlay-start ov))
+      (when-let* ((elem (org-element-context))
+                  ((or (eq (org-element-type elem) 'latex-environment)
+                       (string-match-p "^\\\\\\[" (org-element-property :value elem))))
+                  (img (overlay-get ov 'display))
+                  (prop `(space :align-to (- center (0.55 . ,img))))
+                  (justify (propertize " " 'display prop 'face 'default)))
+        (overlay-put ov 'justify justify)
+        (overlay-put ov 'before-string (overlay-get ov 'justify)))))
+  (define-minor-mode org-latex-preview-center-mode
+    "Center equations previewed with `org-latex-preview'."
+    :global nil
+    (if org-latex-preview-center-mode
+        (progn
+          (add-hook 'org-latex-preview-overlay-open-functions
+                    #'my/org-latex-preview-uncenter nil :local)
+          (add-hook 'org-latex-preview-overlay-close-functions
+                    #'my/org-latex-preview-recenter nil :local)
+          (add-hook 'org-latex-preview-overlay-update-functions
+                    #'my/org-latex-preview-center nil :local))
+      (remove-hook 'org-latex-preview-overlay-close-functions
+                   #'my/org-latex-preview-recenter)
+      (remove-hook 'org-latex-preview-overlay-update-functions
+                   #'my/org-latex-preview-center)
+      (remove-hook 'org-latex-preview-overlay-open-functions
+                   #'my/org-latex-preview-uncenter))))
 #+end_src
