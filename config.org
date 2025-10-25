@@ -157,6 +157,24 @@ Allow for fuzzy matching
   (unless (bound-and-true-p treesit-fold-mode)
     (treesit-fold-mode 1))
   (treesit-fold-close-all))
+
+(after! treesit-fold
+  (defun +zig/fold-bodies-on-open ()
+    (setq-local treesit-fold-range-alist
+                `((t . nil)
+                  (zig-ts-mode . ((Decl . ,#'my/ts-fold-range-zig-fn-body)))))
+    (treesit-fold-mode 1)
+    ;; Small defer so the parser is ready before folding
+    (run-at-time 0.05 nil #'treesit-fold-close-all))
+
+  ;; Tree-sitter Zig
+  (add-hook! 'zig-ts-mode-hook #'+zig/fold-bodies-on-open))
+#+end_src
+
+* LLMs
+#+begin_src emacs-lisp
+(require 'acp)
+(require 'agent-shell)
 #+end_src
 
 * Git
@@ -282,6 +300,7 @@ Taken from [[https://www.tsdh.org/posts/2022-08-01-difftastic-diffing-with-magit
   :after magit
   :config (magit-todos-mode 1))
 #+end_src
+
 * Org-mode
 ** Org-directory
 #+begin_src emacs-lisp
