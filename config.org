@@ -224,7 +224,7 @@ Taken from [[https://www.tsdh.org/posts/2022-08-01-difftastic-diffing-with-magit
 * Org-mode
 ** Org-directory
 #+begin_src emacs-lisp
-(setq org-directory "~/Documents/exocortex")
+(setq org-directory "~/Documents/Org")
 #+end_src
 
 ** Appearance
@@ -384,4 +384,8 @@ Use =olivetti-mode= to centre text in Org-mode
                    #'my/org-latex-preview-center)
       (remove-hook 'org-latex-preview-overlay-open-functions
                    #'my/org-latex-preview-uncenter))))
+#+end_src
+** Org-roam
+#+begin_src emacs-lisp
+(setq org-roam-directory (file-truename "~/Documents/Org/Roam"))
 #+end_src
