@@ -127,9 +127,11 @@ Allow for fuzzy matching
     found))
 
 (defun my/ts-trim-braces-range (block-node)
-  (let ((beg (1+ (treesit-node-start block-node)))
-        (end (1- (treesit-node-end   block-node))))
-    (when (< beg end) (cons beg end))))
+  (when-let* ((start (treesit-node-start block-node))
+              (end   (treesit-node-end   block-node))
+              (beg   (1+ start))
+              (fin   (1- end)))
+    (when (< beg fin) (cons beg fin))))
 
 (defun my/ts-fold-range-rust-method-body (node _offset)
   (let* ((body (treesit-node-child-by-field-name node "body"))
@@ -147,8 +149,9 @@ Allow for fuzzy matching
     (when (and has-proto block)
       (my/ts-trim-braces-range block))))
 (with-eval-after-load 'treesit-fold
-  (setf (alist-get 'rust-ts-mode treesit-fold-range-alist)
-        '((function_item . my/ts-fold-range-rust-method-body)))
+  (dolist (mode '(rust-mode rust-ts-mode rustic-mode rustic-ts-mode))
+    (setf (alist-get mode treesit-fold-range-alist)
+          '((function_item . my/ts-fold-range-rust-method-body))))
   (setf (alist-get 'zig-ts-mode treesit-fold-range-alist)
         '((Decl . my/ts-fold-range-zig-fn-body))))
 
