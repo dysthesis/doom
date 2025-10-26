@@ -1,6 +1,7 @@
 #+title: Elfeed entries
 
-* Computer science :cs:
+* Root :elfeed:
+** Computer science :cs:
 ** [[https://matklad.github.io/feed.xml][Alex Kladov]]
 ** [[https://morss.it/https://lobste.rs/t/compsci,rust,zig,c,osdev,nix,emacs,vim,security,performance,plt,distributed,cryptography,hardware,science,c++,haskell,elixir,linux,android,privacy,reversing,virtualization,compilers,editors,vcs.rss][Lobsters]]
 ** [[https://mcyoung.xyz/feed][mcyoung]]
@@ -33,6 +34,6 @@
 ** Security :security:
 *** [[https://krebsonsecurity.com/feed/][Krebs on Security]]
 *** [[https://www.schneier.com/feed/atom/][Schneier on Security]]
-* Math :math:
+** Math :math:
 ** [[https://morss.it/jeremykun.com/feed/][Math ∩ Programming]]
 ** [[https://morss.it/bartoszmilewski.com/feed/][Bartosz Milewski's Programming Cafe]] :category_theory:
