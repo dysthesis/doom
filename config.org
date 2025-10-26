@@ -381,6 +381,8 @@ Use =olivetti-mode= to centre text in Org-mode
         ("quote" "" "")
         ("export" "⏩" "⏪")))
 
+  (setq org-modern-star 'replace)
+
   (setq org-modern-keyword
    '((t . t)
      ("title" . "𝙏 ")
@@ -422,8 +424,6 @@ Use =olivetti-mode= to centre text in Org-mode
      ("header" . "› ")
      ("caption" . "☰ ")
      ("results" . "🠶"))))
-
-
 #+end_src
 
 ** LaTeX
