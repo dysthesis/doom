@@ -97,7 +97,7 @@ Configure a custom ASCII art to be displayed on the dashboard.
 
 * Navigation
 ** Orderless
-Allow for fuzzy matching
+Allow for fuzzy matching in Orderless menus.
 #+begin_src emacs-lisp
 (use-package! orderless
   :custom
@@ -112,6 +112,8 @@ Allow for fuzzy matching
 #+end_src
 
 * Tree-sitter
+** Method body folding
+Define some functions to fold all method bodies. This feature is inspired by [[https://matklad.github.io/2024/10/14/missing-ide-feature.html][this blog post by Alex Kladov]].
 #+begin_src emacs-lisp
 (defun my/ts-node-find-child-of-type (node type)
   (let* ((n (treesit-node-child-count node))
@@ -194,7 +196,8 @@ Allow for fuzzy matching
 #+end_src
 
 * Git
-** Iconise magit
+** Iconise Magit
+Magit now allows for file type icons, so we make use of that.
 #+begin_src emacs-lisp
 (setopt magit-format-file-function #'magit-format-file-nerd-icons)
 #+end_src
@@ -202,6 +205,7 @@ Allow for fuzzy matching
 ** Use =difft= for diffing
 Taken from [[https://www.tsdh.org/posts/2022-08-01-difftastic-diffing-with-magit.html][this article.]]
 
+Difftastic (=difft=) is a diffing utility which uses tree-sitter to understand the syntax of files, providing a more precise comparison. We define a custom command for Magit to open git diffs with =difft=.
 #+begin_src emacs-lisp
 (after! magit
  (defun dysthesis/magit--with-difftastic (buffer command)
@@ -311,6 +315,7 @@ Taken from [[https://www.tsdh.org/posts/2022-08-01-difftastic-diffing-with-magit
 #+end_src
 
 ** Show =TODO= comments in Magit
+This package adds a section displaying all the =TODO= comments in the repository, which is useful for quickly identifying any unfinished work before committing or otherwise performing Git operations.
 #+begin_src emacs-lisp
 (use-package! magit-todos
   :after magit
@@ -318,6 +323,8 @@ Taken from [[https://www.tsdh.org/posts/2022-08-01-difftastic-diffing-with-magit
 #+end_src
 
 ** Forge
+The =magit-forge= package allows Magit to interact with Git forges, such as GitHub, Codeberg, or GitLab, allowing one to view pull/merge requests, issues, discussions, etc. from the comfort of Magit.
+
 *** University GitLab instance
 #+begin_src emacs-lisp
 (after! magit
