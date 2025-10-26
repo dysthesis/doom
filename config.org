@@ -1,19 +1,30 @@
 #+title: Emacs configuration
 
+This document defines my configuration for Doom Emacs.
+
 * Appearance
+This section defines configurations for Doom Emacs relevant to its general appearance. This does not include package-specific appearance settings, which are contained under the relevant package's sections.
+
 ** Fonts
+Define which fonts to use by Doom Emacs.
 #+begin_src emacs-lisp
 (setq doom-font (font-spec :family "JBMono Nerd Font" :size 9.0)
       doom-variable-pitch-font (font-spec :family "Atkinson Hyperlegible Next" :size 10.0))
+#+end_src
+
+Rescale the variable-pitch font to be of the same scale as the fixed-pitch font.
+#+begin_src emacs-lisp
 (add-to-list 'face-font-rescale-alist '("Atkinson Hyperlegible Next" . 1.1))
 #+end_src
 
 ** Theme
+Define the theme which Doom Emacs uses.
 #+begin_src emacs-lisp
 (setq doom-theme 'doom-tomorrow-night)
 #+end_src
 
 ** Mixed-pitch
+The =mixed-pitch= package allows for different fonts to be used for different UI elements. This is useful for prose formats, such as Org-mode or Markdown, for which we can use variable-pitch fonts for prose and fixed-pitch fonts for code.
 #+begin_src emacs-lisp
 (use-package! mixed-pitch
   :hook
@@ -47,11 +58,13 @@
 #+end_src
 
 ** Line numbers
+Use relative line numbering for easy Vim motions.
 #+begin_src emacs-lisp
 (setq display-line-numbers-type 'relative)
 #+end_src
 
 ** Dashboard
+Configure a custom ASCII art to be displayed on the dashboard.
 #+begin_src emacs-lisp
 (defun dysthesis/dashboard-setup ()
   (let* ((banner '("                                   "
@@ -342,14 +355,13 @@ Use =olivetti-mode= to centre text in Org-mode
 
 *** Heading faces
 #+begin_src emacs-lisp
-;; (after! org
-;;   (custom-set-faces!
-;;               '(org-level-1 :height 1.4 :weight bold)
-;;               '(org-level-2 :height 1.2 :weight bold)
-;;               '(org-level-3 :height 1.1 :weight bold)
-;;               '(org-level-4 :height 1.0 :weight bold)
-;;               '(org-level-5 :height 0.9 :weight bold)
-;;               '(org-document-title :height 2.0 :weight heavy)))
+(custom-theme-set-faces!
+ 'doom-tomorrow-night
+ '(org-level-1 :inherit outline-1 :height 1.6)
+ '(org-level-2 :inherit outline-2 :height 1.4)
+ '(org-level-3 :inherit outline-3 :height 1.2)
+ '(org-level-4 :inherit outline-4 :height 1.1)
+ '(org-document-title :height 2.0 :underline nil :weight heavy))
 #+end_src
 
 *** Org-modern
@@ -587,7 +599,7 @@ Use =olivetti-mode= to centre text in Org-mode
     (let ((inhibit-read-only t)
           (inhibit-modification-hooks t))
       (visual-fill-column-mode)
-      ;; (setq-local shr-current-font '(:family "Merriweather" :height 1.2))
+      (setq-local shr-current-font '(:family "Atkinson Hyperlegible Next" :height 1.5))
       (set-buffer-modified-p nil)))
 
   (defun +rss/elfeed-search-print-entry (entry)
