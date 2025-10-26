@@ -1,0 +1,38 @@
+#+title: Elfeed entries
+
+* Computer science :cs:
+** [[https://matklad.github.io/feed.xml][Alex Kladov]]
+** [[https://morss.it/https://lobste.rs/t/compsci,rust,zig,c,osdev,nix,emacs,vim,security,performance,plt,distributed,cryptography,hardware,science,c++,haskell,elixir,linux,android,privacy,reversing,virtualization,compilers,editors,vcs.rss][Lobsters]]
+** [[https://mcyoung.xyz/feed][mcyoung]]
+** [[https://bitbashing.io/feed.xml][Bit Bashing]]
+** [[https://lemire.me/blog/feed/][Daniel Lemire's blog]]
+** [[https://eli.thegreenplace.net/feeds/all.atom.xml][Eli Bendersky]]
+** [[https://xeiaso.net/blog.rss][Xe Iaso's blog]]
+** [[https://ayats.org/feed.xml][Fernando Ayats]]
+** [[https://lcamtuf.substack.com/feed][lcamtuf's thing]]
+** Systems :systems:
+*** [[https://blog.codingconfessions.com/feed][Confessions of a Code Addict]]
+*** [[https://sthbrx.github.io/rss.xml][Store Halfword Byte-Reverse Indexed]]
+*** [[https://nullprogram.com/feed/][null program]]
+*** [[https://morss.it/faultlore.com/blah/rss.xml][Faultlore]]
+*** Operating systems :os:
+**** [[https://os.phil-opp.com/rss.xml][Writing an OS in Rust]]
+** Languages :lang:
+*** Zig :zig:
+**** [[https://kristoff.it/index.xml][Loris Cro]]
+
+*** Rust :rust:
+**** [[https://morss.it/without.boats/index.xml][Without boats, dreams dry up]]
+
+** Compilers :compilers:
+*** [[https://blog.regehr.org/feed][Embedded in Academia]]
+
+** Cryptography :crypto:
+*** [[https://words.filippo.io/rss/][Filippo Valsorda]]
+*** [[https://blog.cryptographyengineering.com/feed/][Matthew Green]]
+** Security :security:
+*** [[https://krebsonsecurity.com/feed/][Krebs on Security]]
+*** [[https://www.schneier.com/feed/atom/][Schneier on Security]]
+* Math :math:
+** [[https://morss.it/jeremykun.com/feed/][Math ∩ Programming]]
+** [[https://morss.it/bartoszmilewski.com/feed/][Bartosz Milewski's Programming Cafe]] :category_theory:

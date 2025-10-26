@@ -304,6 +304,17 @@ Taken from [[https://www.tsdh.org/posts/2022-08-01-difftastic-diffing-with-magit
   :config (magit-todos-mode 1))
 #+end_src
 
+** Forge
+*** University GitLab instance
+#+begin_src emacs-lisp
+(after! magit
+  (add-to-list 'forge-alist
+             '("nw-syd-gitlab.cseunsw.tech" ;; Git host
+               "nw-syd-gitlab.cseunsw.tech/api/v4" ;; API endpoint
+               "nw-syd-gitlab.cseunsw.tech" ;; ID
+               forge-gitlab-repository)))
+#+end_src
+
 * Org-mode
 ** Org-directory
 #+begin_src emacs-lisp
@@ -468,7 +479,14 @@ Use =olivetti-mode= to centre text in Org-mode
       (remove-hook 'org-latex-preview-overlay-open-functions
                    #'my/org-latex-preview-uncenter))))
 #+end_src
+
 ** Org-roam
 #+begin_src emacs-lisp
 (setq org-roam-directory (file-truename "~/Documents/Org/Roam"))
+#+end_src
+
+* RSS
+#+begin_src emacs-lisp
+(after! elfeed
+  (setq rmh-elfeed-org-files '("~/.config/doom/elfeed.org")))
 #+end_src
